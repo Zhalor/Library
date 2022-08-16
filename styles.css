@@ -1,6 +1,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 .container {
@@ -15,7 +16,7 @@
   grid-template: 150px / 55% 45%;
   background-color: #e8ffff;
   position: sticky;
-  top: 0px;
+  top: -35px;
 }
 
 .header > .add-book {
@@ -53,7 +54,7 @@
 
 .library {
   flex: 1;
-  background-color: rgb(249, 252, 255);
+  background-color: #f9fcff;
   padding-top: 36px;
 }
 
@@ -97,13 +98,63 @@
   border-radius: 6px;
   font-size: 0.8rem;
   width: 100px;
-  margin: 12px auto;
+  margin: 18px auto 0px auto;
 }
 
-.card > button:hover {
-  background-color: #fa66ff;
+.card > button:hover,
+.popup-form > button:hover {
+  background-color: orange;
 }
 
-.card > button:active {
+.card > button:active,
+.popup-form > button:active {
   transform: scale(0.98)
+}
+
+.form-container{
+  position: absolute;
+  z-index: 1;
+  align-self: center;
+  top: 25%;
+  height: 450px;
+  width: 350px;
+  border: 3px solid #332d4f;
+  border-radius: 3px;
+  background-color: #e8ffff;
+  visibility: hidden;
+}
+
+.popup-form {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px;
+}
+
+.popup-form > label,
+.popup-form > div {
+  margin-top: 16px;
+  padding-bottom: 4px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.popup-form > input[type="text"],
+.popup-form > input[type="number"]  {
+  height: 35px;
+  outline: none;
+  border: 2px solid #332d4f;
+  border-radius: 4px;
+  padding-left: 4px;
+  background-color: #f9fcff;
+  font-size: 1rem;
+}
+
+.popup-form > button {
+  width: 150px;
+  padding: 8px 8px;
+  margin: 18px auto 0px auto;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fcf4ff;
+  border: 3px solid #332d4f;
 }
