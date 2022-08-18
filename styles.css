@@ -13,7 +13,7 @@
 
 .header {
   display: grid;
-  grid-template: 150px / 55% 45%;
+  grid-template: 150px / 53% 47%;
   background-color: #e8ffff;
   position: sticky;
   top: -35px;
@@ -115,11 +115,11 @@
   position: absolute;
   z-index: 1;
   align-self: center;
-  top: 25%;
+  top: 20%;
   height: 450px;
   width: 350px;
   border: 3px solid #332d4f;
-  border-radius: 3px;
+  border-radius: 6px;
   background-color: #e8ffff;
   visibility: hidden;
 }
