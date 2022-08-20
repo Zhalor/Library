@@ -172,4 +172,3 @@ function createCard() {
     myLibrary[bookIndex].deleteBook(bookIndex, cardDiv)
   });
 }
-

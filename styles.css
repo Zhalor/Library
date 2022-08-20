@@ -18,7 +18,7 @@
 
 .header {
   display: grid;
-  grid-template: 150px / 53% 47%;
+  grid-template: 125px / 53% 47%;
   background-color: var(--sky-blue);
   position: sticky;
   top: -35px;
@@ -82,7 +82,7 @@
   background-color: #fcf4ff;
   color: var(--dark-purple); 
   padding: 10px;
-  box-shadow: 0px 0px 5px 0px rgb(119, 119, 119);
+  box-shadow: 0px 0px 3px 0px rgb(119, 119, 119);
 }
 
 .card > p {
