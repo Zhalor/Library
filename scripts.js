@@ -12,16 +12,21 @@ Book.prototype.addBooktoLibrary = function(book) {
 }
 
 Book.prototype.deleteBook = function(bookIndex, card) {
-  console.log(card);
   myLibrary.splice(bookIndex, 1);
   card.remove();
   const cards = document.getElementsByClassName('card');
   for(let i = 0; i < cards.length; i++){
-    cards[i].setAttribute('data-index-number', i);
+    cards[i].setAttribute('data-card-number', i);
+  }
+  const readBtns = document.getElementsByClassName('read-book-btn');
+  for(let i = 0; i < readBtns.length; i++){
+    readBtns[i].setAttribute('data-btn-number', i);
   }
 }
 
-Book.prototype.toggleRead = function(readBtn) {
+Book.prototype.toggleRead = function() {
+  let bookIndex = myLibrary.indexOf(this);
+  const readBtn = document.querySelector(`button[data-btn-number="${bookIndex}"]`)
   if(this.read) {
     this.read = false;
     readBtn.classList.remove('read');
@@ -122,7 +127,7 @@ function addBook() {
   const read = document.getElementById("read")
   const newBook = new Book(title.value, author.value, pages.value, read.checked);
   newBook.addBooktoLibrary(newBook);
-  createCard();
+  createCard(newBook);
   popUpForm.style.visibility = "hidden";
   title.value = "";
   author.value = "";
@@ -130,7 +135,7 @@ function addBook() {
   read.checked = false;
 }
 
-function createCard() {
+function createCard(book) {
   const cardDiv = document.createElement('div');
   const titleParagraph = document.createElement('p');
   const authorParagraph = document.createElement('p');
@@ -141,7 +146,7 @@ function createCard() {
   let bookIndex = myLibrary.length - 1;
 
   cardDiv.className = "card";
-  cardDiv.setAttribute('data-index-number', bookIndex);
+  cardDiv.setAttribute('data-card-number', bookIndex);
 
   const cardContainer = document.getElementById('card-container');
 
@@ -162,13 +167,14 @@ function createCard() {
     readBtn.innerText = "Not Read"
     readBtn.classList.add('not-read');
   }
-  readBtn.classList.add("read-book-btn");
+  readBtn.classList.add('read-book-btn');
+  readBtn.setAttribute('data-btn-number', bookIndex);
   readBtn.addEventListener('click', () => {
-    myLibrary[bookIndex].toggleRead(readBtn);
+    book.toggleRead();
   })
   deleteBtn.innerText = "Delete";
   deleteBtn.className = "delete-book-btn";
   deleteBtn.addEventListener('click', () => {
-    myLibrary[bookIndex].deleteBook(bookIndex, cardDiv)
+    book.deleteBook(bookIndex, cardDiv)
   });
 }
