@@ -68,7 +68,7 @@ authorInput.addEventListener('keyup', () => {
 })
 
 pagesInput.addEventListener('keyup', () => {
-  if(pagesInput.value == "" || pagesInput.value == null){
+  if(pagesInput.value == "NaN" || pagesInput.value == null){
     pagesLabel.classList.add('error');
     submitBookBtn.disabled = true;
   } else {
@@ -82,6 +82,21 @@ addBookBtn.addEventListener('click', () => {
   popUpForm.style.visibility = "visible";
 })
 
+submitBookBtn.addEventListener('click', () => {
+  if(titleInput.value == "") {
+    titleLabel.classList.add('error');
+    submitBookBtn.disabled = true;
+  } else if(authorInput.value == ""){
+    authorLabel.classList.add('error');
+    submitBookBtn.disabled = true;
+  } else if(pagesInput.value == ""){
+    pagesLabel.classList.add('error');
+    submitBookBtn.disabled = true;
+  } else {
+    addBook();
+  }
+});
+
 closeFormBtn.addEventListener('click', () => {
   const popUpForm = document.querySelector(".form-container");
   const title = document.getElementById("title")
@@ -89,6 +104,10 @@ closeFormBtn.addEventListener('click', () => {
   const pages = document.getElementById("pages")
   const read = document.getElementById("read")
   popUpForm.style.visibility = "hidden";
+  titleLabel.classList.remove('error');
+  authorLabel.classList.remove('error');
+  pagesLabel.classList.remove('error');
+  submitBookBtn.disabled = false;
   title.value = "";
   author.value = "";
   pages.value = "";
@@ -110,8 +129,6 @@ function addBook() {
   pages.value = "";
   read.checked = false;
 }
-
-submitBookBtn.addEventListener('click', addBook);
 
 function createCard() {
   const cardDiv = document.createElement('div');
