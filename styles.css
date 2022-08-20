@@ -69,6 +69,8 @@
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
   border: 3px solid #332d4f;
   border-radius: 8px;
   background-color: #fcf4ff;
@@ -89,6 +91,10 @@
   font-size: .9rem;
 }
 
+.card > p:last-of-type {
+  flex: 1;
+}
+
 .card > button {
   display: block;
   padding: 6px 8px;
@@ -98,17 +104,29 @@
   border-radius: 6px;
   font-size: 0.8rem;
   width: 100px;
-  margin: 18px auto 0px auto;
+  margin: 0 auto;
+}
+
+.card > button:first-of-type {
+  margin-bottom: 8px;
 }
 
 .card > button:hover,
-.popup-form > button:hover {
+.popup-form > .submit-book:hover:enabled {
   background-color: orange;
 }
 
 .card > button:active,
-.popup-form > button:active {
+.popup-form > .submit-book:active:enabled {
   transform: scale(0.98)
+}
+
+.card > .read {
+  background-color: #e8ffff;
+}
+
+.card > .not-read {
+  background-color: #fd4848;
 }
 
 .form-container{
@@ -136,6 +154,7 @@
   padding-bottom: 4px;
   font-size: 1.2rem;
   font-weight: 700;
+  position: relative;
 }
 
 .popup-form > input[type="text"],
@@ -149,7 +168,7 @@
   font-size: 1rem;
 }
 
-.popup-form > button {
+.submit-book {
   width: 150px;
   padding: 8px 8px;
   margin: 18px auto 0px auto;
@@ -157,4 +176,35 @@
   font-size: 1rem;
   background-color: #fcf4ff;
   border: 3px solid #332d4f;
+}
+
+#close-popup-form {
+  position: absolute;
+  background-color: #fd4848;
+  color: #332d4f;
+  top: 10px;
+  right: 10px;
+  border: 2px solid #332d4f;
+  border-radius: 4px;
+  width: 25px;
+  height: 25px;
+}
+
+.popup-form > #close-popup-form:hover {
+  background-color: #fd1717;
+}
+
+.popup-form > .error::after,
+.popup-form > .error::after {
+  position: absolute;
+  content: "* Required";
+  right: 5px;
+  bottom: 2px;
+  font-size: .7rem;
+  color: #a10000;
+}
+
+.submit-book:disabled {
+  background-color: #e6e6e6;
+  color: #332d4f;
 }
