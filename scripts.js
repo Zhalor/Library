@@ -1,42 +1,45 @@
 const myLibrary = [];
 
-function Book(title, author, pages, read) {
-  this.title = title;
-  this.author = author;
-  this.pages = pages;
-  this.read = read;
-}
 
-Book.prototype.addBooktoLibrary = function(book) {
-  myLibrary.push(book);
-}
-
-Book.prototype.deleteBook = function(bookIndex, card) {
-  myLibrary.splice(bookIndex, 1);
-  card.remove();
-  const cards = document.getElementsByClassName('card');
-  for(let i = 0; i < cards.length; i++){
-    cards[i].setAttribute('data-card-number', i);
+class Book {
+  constructor (title, author, pages, read){
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.read = read;
   }
-  const readBtns = document.getElementsByClassName('read-book-btn');
-  for(let i = 0; i < readBtns.length; i++){
-    readBtns[i].setAttribute('data-btn-number', i);
-  }
-}
 
-Book.prototype.toggleRead = function() {
-  let bookIndex = myLibrary.indexOf(this);
-  const readBtn = document.querySelector(`button[data-btn-number="${bookIndex}"]`)
-  if(this.read) {
-    this.read = false;
-    readBtn.classList.remove('read');
-    readBtn.classList.add('not-read');
-    readBtn.innerText = "Not Read"
-  } else {
-    this.read = true;
-    readBtn.classList.add('read');
-    readBtn.classList.remove('not-read');
-    readBtn.innerText = "Read"
+  addBookToLibrary(book) {
+    myLibrary.push(book);
+  }
+
+  deleteBook(bookIndex, card) {
+    myLibrary.splice(bookIndex, 1);
+    card.remove();
+    const cards = document.getElementsByClassName('card');
+    for(let i = 0; i < cards.length; i++){
+      cards[i].setAttribute('data-card-number', i);
+    }
+    const readBtns = document.getElementsByClassName('read-book-btn');
+    for(let i = 0; i < readBtns.length; i++){
+      readBtns[i].setAttribute('data-btn-number', i);
+    }
+  }
+
+  toggleRead() {
+    let bookIndex = myLibrary.indexOf(this);
+    const readBtn = document.querySelector(`button[data-btn-number="${bookIndex}"]`)
+    if(this.read) {
+      this.read = false;
+      readBtn.classList.remove('read');
+      readBtn.classList.add('not-read');
+      readBtn.innerText = "Not Read"
+    } else {
+      this.read = true;
+      readBtn.classList.add('read');
+      readBtn.classList.remove('not-read');
+      readBtn.innerText = "Read"
+    }
   }
 }
 
@@ -126,7 +129,7 @@ function addBook() {
   const pages = document.getElementById("pages")
   const read = document.getElementById("read")
   const newBook = new Book(title.value, author.value, pages.value, read.checked);
-  newBook.addBooktoLibrary(newBook);
+  newBook.addBookToLibrary(newBook);
   createCard(newBook);
   popUpForm.style.visibility = "hidden";
   title.value = "";
