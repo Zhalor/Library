@@ -1,5 +1,20 @@
-const myLibrary = [];
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithPopup, signOut, GoogleAuthProvider } from "firebase/auth";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCLOoXYDY8ALBLTlkOKjkZTbzNyCC3I96g",
+  authDomain: "library-df92e.firebaseapp.com",
+  projectId: "library-df92e",
+  storageBucket: "library-df92e.appspot.com",
+  messagingSenderId: "74238405847",
+  appId: "1:74238405847:web:ffe4e3f7eedd8111685492"
+};
+
+const myLibrary = [];
 
 class Book {
   constructor (title, author, pages, read){
@@ -44,6 +59,7 @@ class Book {
 }
 
 const addBookBtn = document.querySelector(".add-book");
+const signInBtn = document.querySelector(".sign-in");
 const submitBookBtn = document.querySelector(".submit-book");
 const closeFormBtn = document.getElementById('close-popup-form');
 
@@ -181,3 +197,41 @@ function createCard(book) {
     book.deleteBook(bookIndex, cardDiv)
   });
 }
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+const provider = new GoogleAuthProvider();
+
+const auth = getAuth();
+
+signInBtn.addEventListener('click', () => {
+  if(auth.currentUser) {
+    signOut(auth).then(() => {
+      signInBtn.innerText = "Sign In";
+    }).catch((error) => {
+      // An error happened.
+    });
+  } else {
+    signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+      signInBtn.innerText = `${user.displayName} Sign Out`;
+    }).catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+  });
+  }
+});
