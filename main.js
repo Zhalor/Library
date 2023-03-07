@@ -1,10 +1,7 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, signOut, GoogleAuthProvider } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, collection, doc, getDocs, setDoc, deleteDoc, updateDoc } from "firebase/firestore"; 
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCLOoXYDY8ALBLTlkOKjkZTbzNyCC3I96g",
   authDomain: "library-df92e.firebaseapp.com",
@@ -28,7 +25,9 @@ class Book {
     myLibrary.push(book);
   }
 
-  deleteBook(bookIndex, card) {
+  deleteBook(card) {
+    let bookIndex = myLibrary.indexOf(this);
+    deleteBookFromFirebase(myLibrary[bookIndex].title);
     myLibrary.splice(bookIndex, 1);
     card.remove();
     const cards = document.getElementsByClassName('card');
@@ -45,11 +44,13 @@ class Book {
     let bookIndex = myLibrary.indexOf(this);
     const readBtn = document.querySelector(`button[data-btn-number="${bookIndex}"]`)
     if(this.read) {
+      toggleReadFirebase(false, this.title);
       this.read = false;
       readBtn.classList.remove('read');
       readBtn.classList.add('not-read');
       readBtn.innerText = "Not Read"
     } else {
+      toggleReadFirebase(true, this.title);
       this.read = true;
       readBtn.classList.add('read');
       readBtn.classList.remove('not-read');
@@ -117,16 +118,16 @@ submitBookBtn.addEventListener('click', () => {
     pagesLabel.classList.add('error');
     submitBookBtn.disabled = true;
   } else {
-    addBook();
+    addBook([]);
   }
 });
 
 closeFormBtn.addEventListener('click', () => {
   const popUpForm = document.querySelector(".form-container");
-  const title = document.getElementById("title")
-  const author = document.getElementById("author")
-  const pages = document.getElementById("pages")
-  const read = document.getElementById("read")
+  const title = document.getElementById("title");
+  const author = document.getElementById("author");
+  const pages = document.getElementById("pages");
+  const read = document.getElementById("read");
   popUpForm.style.visibility = "hidden";
   titleLabel.classList.remove('error');
   authorLabel.classList.remove('error');
@@ -138,14 +139,20 @@ closeFormBtn.addEventListener('click', () => {
   read.checked = false;
 })
 
-function addBook() {
+function addBook(arrFromFirebase) {
   const popUpForm = document.querySelector(".form-container");
-  const title = document.getElementById("title")
-  const author = document.getElementById("author")
-  const pages = document.getElementById("pages")
-  const read = document.getElementById("read")
-  const newBook = new Book(title.value, author.value, pages.value, read.checked);
+  const title = document.getElementById("title");
+  const author = document.getElementById("author");
+  const pages = document.getElementById("pages");
+  const read = document.getElementById("read");
+  let newBook = null;
+  if(arrFromFirebase.length > 0) {
+    newBook = new Book(arrFromFirebase[0], arrFromFirebase[1], arrFromFirebase[2], arrFromFirebase[3]);
+  } else {
+    newBook = new Book(title.value, author.value, pages.value, read.checked);
+  }
   newBook.addBookToLibrary(newBook);
+  addBookToFirebase(newBook);
   createCard(newBook);
   popUpForm.style.visibility = "hidden";
   title.value = "";
@@ -194,44 +201,64 @@ function createCard(book) {
   deleteBtn.innerText = "Delete";
   deleteBtn.className = "delete-book-btn";
   deleteBtn.addEventListener('click', () => {
-    book.deleteBook(bookIndex, cardDiv)
+    book.deleteBook(cardDiv)
   });
 }
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
+const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
-
 const auth = getAuth();
 
-signInBtn.addEventListener('click', () => {
-  if(auth.currentUser) {
-    signOut(auth).then(() => {
+signInBtn.addEventListener('click', async () => {
+  if(auth.currentUser) {  
+    try {
+      await signOut(auth);
       signInBtn.innerText = "Sign In";
-    }).catch((error) => {
-      // An error happened.
-    });
+    } catch (e) {
+      console.log(e);
+    }
   } else {
-    signInWithPopup(auth, provider)
-    .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
-      // The signed-in user info.
-      const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
-      signInBtn.innerText = `${user.displayName} Sign Out`;
-    }).catch((error) => {
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
-  });
+    try {
+      await signInWithPopup(auth, provider);
+      signInBtn.innerText = `${auth.currentUser.displayName} Sign Out`;
+      getBooks();
+    } catch (e) {
+      console.log(e);
+    }
   }
 });
+
+async function getBooks() {
+  const snapshot = await getDocs(collection(db, auth.currentUser.uid));
+  snapshot.docs.forEach((book) => {
+    const bookObj = book.data();
+    addBook([bookObj.title, bookObj.author, bookObj.pages, bookObj.read]);
+  });
+}
+
+async function addBookToFirebase(book) {
+  if(auth.currentUser) {
+    try {
+      await setDoc(doc(db, auth.currentUser.uid, book.title), {
+        title: book.title,
+        author: book.author,
+        pages: book.pages,
+        read: book.read,
+      });
+      console.log("Document written");
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+}
+
+async function deleteBookFromFirebase(title) {
+  await deleteDoc(doc(db, auth.currentUser.uid, title));
+}
+
+async function toggleReadFirebase(read, title) {
+  await updateDoc(doc(db, auth.currentUser.uid, title), {
+    read: read,
+  })
+}
